@@ -42,14 +42,17 @@ jobs:
       - name: Set GOOGLE_API_KEY environment variable
         run: echo "GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}" >> $GITHUB_ENV
 
-      - name: Deploy to Google Cloud Run (using Buildpacks)
-        id: deploy
-        uses: google-github-actions/deploy-cloudrun@v2
-        with:
-          service: fastapi-image-personality
-          region: us-central1
-          source: .
-          env_vars: GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+      - name: Build and Push Docker image
+        run: |
+          gcloud builds submit --tag gcr.io/${{ env.PROJECT_ID }}/fastapi-image-personality .
+
+      - name: Deploy to Google Cloud Run (using Docker image)
+        run: |
+          gcloud run deploy fastapi-image-personality \
+            --image gcr.io/${{ env.PROJECT_ID }}/fastapi-image-personality \
+            --region us-central1 \
+            --platform managed \
+            --set-env-vars GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
 
       - name: Show Cloud Run URL
         run: |
