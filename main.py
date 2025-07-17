@@ -50,8 +50,9 @@ def describe_image(image_bytes):
     image = Image.open(io.BytesIO(image_bytes))
     vision_model = genai.GenerativeModel(model_name="gemini-1.5-flash")
     response = vision_model.generate_content([
+        "You are an expert image analyst. If the image contains a famous or globally recognized person, identify them and provide a brief description about who they are and their significance. "
         "You are an expert image analyst. Describe what you see in this image in a meaningful, detailed way. "
-        "If you can reasonably guess the person's cultural or national background (such as Indian or Chinese) "
+        "If you can reasonably guess the person's cultural or national background "
         "based on appearance, clothing, or background elements, include that. If it's unclear, say so.",
         image
     ])
